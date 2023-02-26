@@ -80,24 +80,17 @@ class XiaomiUdfpsHander : public UdfpsHandler {
                     continue;
                 }
 
-                if (readBool(fd)) {
-                    mDevice->extCmd(mDevice, COMMAND_NIT, PARAM_NIT_UDFPS);
-                    set(FOD_STATUS_PATH, FOD_STATUS_ON);
-                } else {
-                    mDevice->extCmd(mDevice, COMMAND_NIT, PARAM_NIT_NONE);
-                    set(FOD_HBM_PATH, FOD_HBM_OFF);
-                    set(FOD_STATUS_PATH, FOD_STATUS_OFF);
-                }
+                mDevice->extCmd(mDevice, COMMAND_NIT, readBool(fd) ? PARAM_NIT_UDFPS : PARAM_NIT_NONE);
             }
         }).detach();
     }
 
     void onFingerDown(uint32_t /*x*/, uint32_t /*y*/, float /*minor*/, float /*major*/) {
-        // nothing
+        set(FOD_STATUS_PATH, FOD_STATUS_ON);
     }
 
     void onFingerUp() {
-        // nothing
+        set(FOD_STATUS_PATH, FOD_STATUS_OFF);
     }
 
     void onAcquired(int32_t /*result*/, int32_t /*vendorCode*/) {
@@ -105,7 +98,7 @@ class XiaomiUdfpsHander : public UdfpsHandler {
     }
 
     void cancel() {
-        // nothing
+        set(FOD_HBM_PATH, FOD_HBM_OFF);
     }
 
   private:
